@@ -1,0 +1,22 @@
+version: '3'
+services:
+  php:
+    container_name: docktober_php
+    build:
+      context: ./DockerFiles/php-fpm
+    volumes:
+      - ./octobercms:/var/www/html/octobercms
+    links:
+      - docktober_db
+
+  web:
+    container_name: docktober_web
+    build: 
+      context: ./DockerFiles/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./octobercms:/var/www/html/octobercms
+    links:
+      - php
