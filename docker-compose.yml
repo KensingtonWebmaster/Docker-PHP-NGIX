@@ -5,7 +5,11 @@ services:
     build:
       context: ./php-fpm
     volumes:
-      - /var/www/html/Website/octobercms:/var/www/html/octobercms
+      - /var/www/html/Website/octobercms:/var/www/html/website
+      # - /var/www/html/wintercms:/var/www/html/website
+    network_mode: bridge
+    external_links:
+      - website_db
 
   web:
     container_name: docktober_web
@@ -15,6 +19,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/www/html/Website/octobercms:/var/www/html/octobercms
+      - /var/www/html/Website/octobercms:/var/www/html/website
+      # - /var/www/html/wintercms:/var/www/html/website
     links:
       - php
+    network_mode: bridge
+    external_links:
+      - website_db

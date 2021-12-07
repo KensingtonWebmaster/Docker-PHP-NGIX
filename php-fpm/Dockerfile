@@ -2,7 +2,8 @@ FROM php:7.4-fpm
 
 COPY ./php.ini /usr/local/etc/php/
 
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils\
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils \
+    libonig-dev \
     default-mysql-client \
     vim \
     libfreetype6-dev \
@@ -12,9 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils\
     zip \
     libldap2-dev \
     && docker-php-ext-install -j$(nproc) bcmath mbstring iconv zip pdo pdo_mysql \
-    && docker-php-ext-configure zip --with-libzip \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-configure gd \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap \
     && rm -rf /var/lib/apt/lists/*
@@ -40,14 +40,14 @@ RUN apt-get update \
     && echo 'fr_FR.UTF-8 UTF-8' >> /etc/locale.gen \
     && locale-gen
 
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-webp-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+RUN docker-php-ext-configure gd \
     && docker-php-ext-install -j$(nproc) intl gd opcache mbstring zip pdo_pgsql pdo_mysql soap pgsql mysqli exif
 
 # PECL modules
-RUN pecl install imagick && docker-php-ext-enable imagick \
-    && pecl install apcu && docker-php-ext-enable apcu \
-    && pecl install apcu_bc-beta && docker-php-ext-enable --ini-name=docker-php-ext-apcu_bc.ini apc \
-    && pecl install ssh2-1.0 && docker-php-ext-enable ssh2
+# RUN pecl install imagick && docker-php-ext-enable imagick \
+#     && pecl install apcu && docker-php-ext-enable apcu \
+#     && pecl install apcu_bc-beta && docker-php-ext-enable --ini-name=docker-php-ext-apcu_bc.ini apc \
+#     && pecl install ssh2-1.0 && docker-php-ext-enable ssh2
 
 
 RUN { \
@@ -73,4 +73,6 @@ RUN rm -rf /var/lib/apt/lists/ && curl -sL https://deb.nodesource.com/setup_10.x
 RUN apt-get install nodejs -y
 
 # RUN usermod -u 1000 www-data
-RUN usermod -u 1002 www-data
+# # RUN usermod -u 1002 www-data
+# RUN chown -R www-data:www-data /var/www
+# RUN chmod -R 755 /var/www
